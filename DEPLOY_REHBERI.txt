@@ -1,0 +1,69 @@
+OMKAR TURİZM WEB SİTESİ - VDS YÜKLEME REHBERİ
+=====================================================
+
+Bu dosya, web sitenizi Windows VDS sunucunuza nasıl yükleyeceğinizi adım adım anlatır.
+
+ADIM 1: HAZIRLIK (Kendi Bilgisayarınızda)
+-----------------------------------------------------
+1. Masaüstünüzdeki "omkar backend-fronted" klasörüne gidin.
+2. Şu dosyalar DIŞINDAKİ her şeyi seçin:
+   - "node_modules" klasörünü SEÇMEYİN (Bunu sunucuda taze olarak kuracağız).
+   - Diğer tüm dosyaları (omkar.html, server.js, css, resimler vb.) seçin.
+3. Sağ tıklayıp "Arşive Ekle" veya "Sıkıştır (Zip)" diyerek bir .zip dosyası oluşturun.
+4. Bu dosyanın adını "site_yedek.zip" yapalım.
+
+ADIM 2: SUNUCUYA BAĞLANMA
+-----------------------------------------------------
+1. Windows Arama çubuğuna "Uzak Masaüstü Bağlantısı" veya "Remote Desktop" yazın.
+2. VDS firmanızın size verdiği IP adresini (örn: 192.168.1.55) yazıp bağlan deyin.
+3. Kullanıcı adı (genelde Administrator) ve şifrenizi girerek sunucunuza bağlanın.
+
+ADIM 3: NODE.JS KURULUMU (Sunucuda)
+-----------------------------------------------------
+1. Sunucunun içinde internet tarayıcısını (Edge/Chrome) açın.
+2. "Node.js download" diye aratın veya direkt "https://nodejs.org/" adresine gidin.
+3. "LTS" (Long Term Support) olan sürümü indirin ve "Next > Next" diyerek kurun.
+4. Kurulum bitince sunucuda bir Komut İstemi (CMD) açıp `node -v` yazın. Versiyon numarası görüyorsanız kurulum tamamdır.
+
+ADIM 4: DOSYALARI ATMA (Sunucuya)
+-----------------------------------------------------
+1. Kendi bilgisayarınızdaki "site_yedek.zip" dosyasını kopyalayın (Ctrl+C).
+2. Uzak Masaüstü penceresine geçip, sunucunun Masaüstüne yapıştırın (Ctrl+V).
+3. "site_yedek.zip" dosyasına sağ tıklayıp "Tümünü Ayıkla" (Extract All) diyerek bir klasöre çıkarın (Örn: C:\omkar-site).
+
+ADIM 5: SİTEYİ KURMA VE BAŞLATMA
+-----------------------------------------------------
+1. Sunucuda "omkar-site" klasörünün içine girin.
+2. Klasörün adres çubuğuna (üstteki bar) tıklayıp "cmd" yazıp Enter'a basın. (Siyah ekran o klasörde açılacak).
+3. Şu komutu yazıp Enter'a basın:
+   npm install
+
+   (Bu komut gerekli kütüphaneleri internetten indirecek).
+
+4. Kurulum bitince siteyi başlatmak için:
+   node server.js
+
+5. Eğer "Sunucu http://localhost:80 adresinde çalışıyor." yazısını görürseniz siteniz yayında demektir!
+
+ADIM 6: PORT AÇMA (Çok Önemli!)
+-----------------------------------------------------
+Sitenizin dışarıdan (IP adresiyle) görülebilmesi için Windows Güvenlik Duvarı'ndan 80 portunu açmalısınız:
+1. Başlat -> "Windows Defender Firewall with Advanced Security" araması yapın.
+2. Sol menüden "Inbound Rules" (Gelen Kurallar) tıklayın.
+3. Sağ menüden "New Rule..." (Yeni Kural) tıklayın.
+4. "Port" seçin -> Next.
+5. "TCP" ve "Specific local ports" seçip kutuya "80" yazın -> Next.
+6. "Allow the connection" -> Next -> Hepsini seçili bırakın -> Next.
+7. İsim olarak "Web Sitesi (80)" yazıp Finish deyin.
+
+SONUÇ
+-----------------------------------------------------
+Artık tarayıcınızdan VDS IP adresinizi (Örn: http://192.168.1.XX) yazdığınızda siteniz açılacaktır!
+Domain satın aldığınızda, domain panelinden "A Kaydı" olarak bu IP adresini girmeniz yeterli olacaktır.
+
+EKSTRA: SÜREKLİ AÇIK KALMASI İÇİN
+-----------------------------------------------------
+Siyah CMD ekranını kapatırsanız site kapanır. Kapanmaması için "PM2" kullanabilirsiniz:
+1. cmd'de şu komutu yazın: npm install -g pm2
+2. Sonra siteyi şöyle başlatın: pm2 start server.js --name "omkar"
+3. Artık pencereyi kapatsanız da site çalışır.

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omkar Turizm - Yönetim Paneli</title>
+    <link rel="stylesheet" href="omkar.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background-color: var(--light-bg);
+            padding-top: 100px;
+        }
+
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-box {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .message-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background: var(--light-bg);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .message-body {
+            color: #555;
+        }
+
+        #messageList {
+            display: none;
+            /* Hidden by default until login */
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Omkar<span class="highlight">Admin</span></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">Siteye Dön</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="admin-container">
+
+        <div id="loginSection" class="login-box">
+            <h2 class="section-title" style="font-size: 1.8rem;">Giriş Yap</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Şifre" required>
+                </div>
+                <button type="submit" class="btn btn-submit">Giriş</button>
+                <div id="loginFeedback" class="form-feedback"></div>
+            </form>
+        </div>
+
+        <div id="dashboardSection" style="display: none;">
+            <h2 class="section-title" style="font-size: 1.8rem;">Gelen Mesajlar</h2>
+            <div id="messagesContainer">
+                <p>Mesajlar yükleniyor...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Inline script for Admin logic specifically
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const username = document.getElementById('username').value;
+                    const password = document.getElementById('password').value;
+                    const feedback = document.getElementById('loginFeedback');
+
+                    try {
+                        const response = await fetch('/api/admin/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, password })
+                        });
+                        const result = await response.json();
+
+                        if (result.success) {
+                            feedback.style.color = 'green';
+                            feedback.textContent = 'Giriş Başarılı!';
+                            document.getElementById('loginSection').style.display = 'none';
+                            document.getElementById('dashboardSection').style.display = 'block';
+                            loadMessages();
+                        } else {
+                            feedback.style.color = 'red';
+                            feedback.textContent = result.message;
+                        }
+                    } catch (error) {
+                        feedback.textContent = 'Bir hata oluştu.';
+                    }
+                });
+            }
+        });
+
+        async function loadMessages() {
+            const container = document.getElementById('messagesContainer');
+            try {
+                const response = await fetch('/api/admin/messages');
+                const messages = await response.json();
+
+                if (messages.length === 0) {
+                    container.innerHTML = '<p>Henüz mesaj yok.</p>';
+                } else {
+                    container.innerHTML = messages.map(msg => `
+                        <div class="message-card">
+                            <div class="message-header">
+                                <span>${msg.name} (${msg.email})</span>
+                                <span>${msg.date}</span>
+                            </div>
+                            <div class="message-body">
+                                <p><strong>Tel:</strong> ${msg.phone}</p>
+                                <p>${msg.message}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                container.innerHTML = '<p>Mesajlar yüklenemedi.</p>';
+            }
+        }
+    </script>
+</body>
+
+</html>

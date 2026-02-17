@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Özel Transfer - Omkar Taşımacılık</title>
+    <link rel="stylesheet" href="omkar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        .page-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 150px 0 80px;
+            text-align: center;
+        }
+
+        .detail-section {
+            padding: 80px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 50px;
+        }
+
+        .detail-img {
+            flex: 1;
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-content {
+            flex: 1;
+        }
+
+        .detail-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        /* Gallery */
+        .gallery-section {
+            padding: 0 0 80px 0;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-item {
+            height: 250px;
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .detail-section {
+                flex-direction: column;
+            }
+
+            .detail-img {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="/" style="text-decoration: none; color: inherit;">Omkar<span>Taşımacılık</span></a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">Anasayfa</a></li>
+                    <li><a href="/#services">Hizmetlerimiz</a></li>
+                    <li><a href="/#contact">İletişim</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-icon" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <div class="container fade-up">
+            <h1>Özel & VIP Transfer</h1>
+            <p>Konforlu ve Prestijli Yolculuk</p>
+        </div>
+    </div>
+
+    <div class="container detail-section">
+        <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            alt="VIP Transfer" class="detail-img fade-up">
+        <div class="detail-content fade-up">
+            <h2>Size Özel Hizmet</h2>
+            <p>Havalimanı transferleri, otel karşılamaları, iş toplantıları veya özel davetleriniz için VIP
+                araçlarımızla hizmetinizdeyiz. Deneyimli şoförlerimiz, sizi veya misafirlerinizi istediğiniz noktadan
+                alıp, konforlu bir yolculukla hedefinize ulaştırır.</p>
+            <br>
+            <p><strong>Hizmet Detayları:</strong></p>
+            <ul style="list-style: disc; padding-left: 20px; margin-top: 10px;">
+                <li>Havalimanı Karşılama ve Transfer</li>
+                <li>Şehirler Arası VIP Transfer</li>
+                <li>Gelin Arabası ve Düğün Hizmetleri</li>
+                <li>Protokol Taşımacılığı</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="container gallery-section">
+        <h3 class="section-title fade-up" style="font-size: 1.8rem; margin-bottom: 30px;">Görseller</h3>
+        <div class="gallery-grid">
+            <div class="gallery-item fade-up">
+                <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                    alt="VIP Minibüs">
+            </div>
+            <div class="gallery-item fade-up">
+                <img src="https://images.unsplash.com/photo-1550355291-bbee04a92027?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                    alt="Konforlu Koltuk">
+            </div>
+            <div class="gallery-item fade-up">
+                <img src="https://images.unsplash.com/photo-1520105072000-f44fc083e508?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                    alt="Özel Şoför">
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/#contact" class="btn">Rezervasyon Yap</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 Omkar Taşımacılık. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
