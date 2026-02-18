@@ -8,14 +8,6 @@
   ],
   "routes": [
     {
-      "src": "/omkar.css",
-      "dest": "/omkar.css"
-    },
-    {
-      "src": "/script.js",
-      "dest": "/script.js"
-    },
-    {
       "src": "/(.*)",
       "dest": "/server.js"
     }

@@ -13,6 +13,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
+// Static dosyalar için explicit route'lar
+app.get('/omkar.css', (req, res) => res.sendFile(path.join(__dirname, 'omkar.css')));
+app.get('/script.js', (req, res) => res.sendFile(path.join(__dirname, 'script.js')));
+
 // MongoDB bağlantısı
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/omkar';
 mongoose.connect(MONGODB_URI)
