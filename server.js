@@ -6,7 +6,6 @@ const path = require('path');
 const axios = require('axios');
 
 const app = express();
-// VDS üzerinde 80 portu (standart web portu) veya ortam değişkeni
 const port = process.env.PORT || 80;
 
 app.use(cors());
@@ -14,18 +13,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Database Setup
-// Persistent file database instead of :memory:
-// Dosya tabanlı veritabanı kullanımı (kalıcı olması için)
 const db = new sqlite3.Database(path.join(__dirname, 'omkar.db'));
 
 db.serialize(() => {
     db.run("CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, phone TEXT, message TEXT, date TEXT)");
-    db.run("CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)");
-
-    const stmt = db.prepare("INSERT INTO admins (username, password) VALUES (?, ?)");
-    stmt.run("admin", "admin123");
-    stmt.finalize();
+    db.run("CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)");
+    // INSERT OR IGNORE ile her baslatmada tekrar eklenmesin
+    db.run("INSERT OR IGNORE INTO admins (username, password) VALUES ('admin', 'admin123')");
 });
 
 const RECAPTCHA_SECRET_KEY = '6LcPHW8sAAAAAFLro5AI6n1LawBSY69tHTYvHRom';
@@ -33,88 +27,73 @@ const RECAPTCHA_SECRET_KEY = '6LcPHW8sAAAAAFLro5AI6n1LawBSY69tHTYvHRom';
 app.post('/api/contact', async (req, res) => {
     const { name, email, phone, message, recaptchaToken } = req.body;
 
-    if (!recaptchaToken) {
-        return res.status(400).json({ success: false, message: 'Captcha doğrulaması eksik.' });
+    if (!name || !email || !phone || !message) {
+        return res.status(400).json({ success: false, message: 'Lutfen tum alanlari doldurun.' });
     }
 
-    try {
-        const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`;
-        const recaptchaResponse = await axios.post(verificationURL);
-
-        if (!recaptchaResponse.data.success) {
-            return res.status(400).json({ success: false, message: 'Captcha doğrulaması başarısız. Lütfen tekrar deneyin.' });
-        }
-
-        const stmt = db.prepare("INSERT INTO messages (name, email, phone, message, date) VALUES (?, ?, ?, ?, ?)");
-        const date = new Date().toLocaleString('tr-TR');
-        stmt.run(name, email, phone, message, date, function (err) {
-            if (err) {
-                return res.status(500).json({ success: false, message: 'Veritabanı hatası.' });
+    if (recaptchaToken) {
+        try {
+            const url = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`;
+            const recaptchaRes = await axios.post(url);
+            if (!recaptchaRes.data.success) {
+                return res.status(400).json({ success: false, message: 'Captcha dogrulamasi basarisiz. Lutfen tekrar deneyin.' });
             }
-            res.json({ success: true, message: 'Mesajınız başarıyla gönderildi.' });
-        });
-        stmt.finalize();
-
-    } catch (error) {
-        console.error('Recaptcha error:', error);
-        return res.status(500).json({ success: false, message: 'Sunucu hatası.' });
+        } catch (e) {
+            console.error('reCAPTCHA hatasi:', e.message);
+        }
     }
+
+    const stmt = db.prepare("INSERT INTO messages (name, email, phone, message, date) VALUES (?, ?, ?, ?, ?)");
+    const date = new Date().toLocaleString('tr-TR');
+    stmt.run(name, email, phone, message, date, function (err) {
+        if (err) return res.status(500).json({ success: false, message: 'Veritabani hatasi.' });
+        res.json({ success: true, message: 'Mesajiniz basariyla gonderildi. En kisa surede donus yapacagiz.' });
+    });
+    stmt.finalize();
 });
 
 app.post('/api/admin/login', (req, res) => {
     const { username, password } = req.body;
     db.get("SELECT * FROM admins WHERE username = ? AND password = ?", [username, password], (err, row) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Sunucu hatası.' });
-        }
+        if (err) return res.status(500).json({ success: false, message: 'Sunucu hatasi.' });
         if (row) {
-            res.json({ success: true, message: 'Giriş başarılı.' });
+            res.json({ success: true });
         } else {
-            res.status(401).json({ success: false, message: 'Hatalı kullanıcı adı veya şifre.' });
+            res.status(401).json({ success: false, message: 'Hatali kullanici adi veya sifre.' });
         }
     });
 });
 
 app.get('/api/admin/messages', (req, res) => {
+    const auth = req.headers['x-admin-auth'];
+    if (auth !== 'omkar-admin-2026') {
+        return res.status(403).json({ success: false, message: 'Yetkisiz erisim.' });
+    }
     db.all("SELECT * FROM messages ORDER BY id DESC", [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Veritabanı hatası.' });
-        }
+        if (err) return res.status(500).json({ success: false, message: 'Veritabani hatasi.' });
         res.json(rows);
     });
 });
 
-// Main Route
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'omkar.html'));
+app.delete('/api/admin/messages/:id', (req, res) => {
+    const auth = req.headers['x-admin-auth'];
+    if (auth !== 'omkar-admin-2026') {
+        return res.status(403).json({ success: false, message: 'Yetkisiz erisim.' });
+    }
+    db.run("DELETE FROM messages WHERE id = ?", [req.params.id], function (err) {
+        if (err) return res.status(500).json({ success: false, message: 'Silinemedi.' });
+        res.json({ success: true });
+    });
 });
 
-// Admin Route
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
-});
-
-// Service Page Routes
-app.get('/personel-tasimaciligi', (req, res) => {
-    console.log('Request for: /personel-tasimaciligi');
-    res.sendFile(path.join(__dirname, 'personel-tasimaciligi.html'));
-});
-
-app.get('/ogrenci-tasimaciligi', (req, res) => {
-    console.log('Request for: /ogrenci-tasimaciligi');
-    res.sendFile(path.join(__dirname, 'ogrenci-tasimaciligi.html'));
-});
-
-app.get('/ozel-transfer', (req, res) => {
-    console.log('Request for: /ozel-transfer');
-    res.sendFile(path.join(__dirname, 'ozel-transfer.html'));
-});
-
-app.get('/gezi-turlar', (req, res) => {
-    console.log('Request for: /gezi-turlar');
-    res.sendFile(path.join(__dirname, 'gezi-turlar.html'));
-});
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'omkar.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/personel-tasimaciligi', (req, res) => res.sendFile(path.join(__dirname, 'personel-tasimaciligi.html')));
+app.get('/ogrenci-tasimaciligi', (req, res) => res.sendFile(path.join(__dirname, 'ogrenci-tasimaciligi.html')));
+app.get('/ozel-transfer', (req, res) => res.sendFile(path.join(__dirname, 'ozel-transfer.html')));
+app.get('/gezi-turlar', (req, res) => res.sendFile(path.join(__dirname, 'gezi-turlar.html')));
+app.get('/hizmetler', (req, res) => res.sendFile(path.join(__dirname, 'services.html')));
 
 app.listen(port, () => {
-    console.log(`Sunucu http://localhost:${port} adresinde çalışıyor.`);
+    console.log('Sunucu http://localhost:' + port + ' adresinde calisiyor.');
 });

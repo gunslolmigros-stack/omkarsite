@@ -1,161 +1,107 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hizmet Detayları - Omkar Turizm</title>
+    <title>Hizmet Detayları - Omkar Taşımacılık</title>
     <link rel="stylesheet" href="omkar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .page-header {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 120px 0 60px;
-            text-align: center;
-        }
-
-        .detail-section {
-            padding: 60px 0;
-        }
-
+        .services-detail-grid { padding: 80px 0; }
         .detail-item {
             display: flex;
             align-items: center;
-            margin-bottom: 60px;
-            gap: 40px;
+            margin-bottom: 70px;
+            gap: 50px;
         }
-
-        .detail-item:nth-child(even) {
-            flex-direction: row-reverse;
-        }
-
-        .detail-img {
-            flex: 1;
-            height: 350px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .detail-content {
-            flex: 1;
-        }
-
-        .detail-content h3 {
-            color: var(--primary-color);
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
+        .detail-item:nth-child(even) { flex-direction: row-reverse; }
+        .detail-img { flex: 1; height: 350px; object-fit: cover; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .detail-content { flex: 1; }
+        .detail-content h3 { color: var(--primary-color); font-size: 1.9rem; margin-bottom: 18px; }
         @media (max-width: 768px) {
-
-            .detail-item,
-            .detail-item:nth-child(even) {
-                flex-direction: column;
-            }
-
-            .detail-img {
-                width: 100%;
-                height: 250px;
-            }
+            .detail-item, .detail-item:nth-child(even) { flex-direction: column; }
+            .detail-img { width: 100%; height: 240px; }
         }
     </style>
 </head>
-
 <body>
 
-    <header>
-        <div class="container">
-            <div class="logo">
-                <h1><a href="/" style="text-decoration: none; color: inherit;">Omkar<span>Turizm</span></a></h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="/">Anasayfa</a></li>
-                    <li><a href="/#services">Hizmetlerimiz</a></li>
-                    <li><a href="/#contact">İletişim</a></li>
-                </ul>
-            </nav>
-            <div class="mobile-menu-icon" onclick="toggleMenu()">
-                <i class="fas fa-bars"></i>
-            </div>
+<header>
+    <div class="container">
+        <div class="logo">
+            <h1><a href="/" style="text-decoration:none;color:inherit;">Omkar<span>Taşımacılık</span></a></h1>
         </div>
-    </header>
+        <nav id="mainNav">
+            <ul>
+                <li><a href="/" onclick="closeMenu()">Anasayfa</a></li>
+                <li><a href="/#services" onclick="closeMenu()">Hizmetlerimiz</a></li>
+                <li><a href="/#contact" onclick="closeMenu()">İletişim</a></li>
+            </ul>
+        </nav>
+        <div class="mobile-menu-icon" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</header>
 
-    <div class="page-header">
-        <div class="container">
-            <h1>Hizmet Detayları</h1>
-            <p>Profesyonel taşımacılık çözümlerimiz hakkında detaylı bilgiler.</p>
+<div class="page-header">
+    <div class="container">
+        <h1>Hizmet Detayları</h1>
+        <p>Profesyonel taşımacılık çözümlerimiz hakkında detaylı bilgiler.</p>
+    </div>
+</div>
+
+<div class="container services-detail-grid">
+
+    <div class="detail-item" id="personel">
+        <img src="https://images.unsplash.com/photo-1557223562-6c77ef16210f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Personel Taşımacılığı" class="detail-img fade-up">
+        <div class="detail-content fade-up">
+            <h3>Personel Taşımacılığı</h3>
+            <p>Omkar Taşımacılık olarak, firmaların en büyük ihtiyaçlarından biri olan personel taşımacılığında güven, konfor ve zamanlamayı garanti ediyoruz. Modern ve bakımlı araç filomuzla, çalışanlarınızın mesai başlangıcında motive bir şekilde iş yerinde olmalarını, mesai bitiminde ise güvenle evlerine ulaşmalarını sağlıyoruz.</p>
+            <br>
+            <p>Tüm sürücülerimiz psikoteknik ve SRC belgelerine sahiptir. Araçlarımız GPS ile 7/24 takip edilmektedir.</p>
+            <a href="/personel-tasimaciligi" class="btn" style="margin-top:20px;">Detaylı Bilgi</a>
         </div>
     </div>
 
-    <div class="container detail-section">
-
-        <div class="detail-item" id="personel">
-            <img src="https://images.unsplash.com/photo-1557223562-6c77ef16210f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
-                alt="Personel Taşımacılığı" class="detail-img">
-            <div class="detail-content">
-                <h3>Personel Taşımacılığı</h3>
-                <p>Omkar Turizm olarak, firmaların en büyük ihtiyaçlarından biri olan personel taşımacılığında güven,
-                    konfor ve zamanlamayı garanti ediyoruz. Modern ve bakımlı araç filomuzla, çalışanlarınızın mesai
-                    başlangıcında motive bir şekilde iş yerinde olmalarını, mesai bitiminde ise güvenle evlerine
-                    ulaşmalarını sağlıyoruz.</p>
-                <br>
-                <p>Tüm sürücülerimiz psikoteknik ve SRC belgelerine sahiptir. Araçlarımız GPS ile 7/24 takip
-                    edilmektedir.</p>
-            </div>
+    <div class="detail-item" id="ogrenci">
+        <img src="https://images.unsplash.com/photo-1543489822-c495e94fbdac?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Öğrenci Taşımacılığı" class="detail-img fade-up">
+        <div class="detail-content fade-up">
+            <h3>Öğrenci Taşımacılığı</h3>
+            <p>Geleceğimizin teminatı olan çocuklarımızın güvenliği bizim için her şeyden önemlidir. Okul servislerimizde yönetmeliklere tam uygun, emniyet kemerli, otomatik kapılı ve rehber personel bulundurulan araçlar kullanıyoruz.</p>
+            <br>
+            <p>Velilerimiz, araç takip sistemi sayesinde servisin nerede olduğunu ve tahmini varış süresini anlık olarak izleyebilirler.</p>
+            <a href="/ogrenci-tasimaciligi" class="btn" style="margin-top:20px;">Detaylı Bilgi</a>
         </div>
-
-        <div class="detail-item" id="ogrenci">
-            <img src="https://images.unsplash.com/photo-1543489822-c495e94fbdac?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
-                alt="Öğrenci Taşımacılığı" class="detail-img">
-            <div class="detail-content">
-                <h3>Öğrenci Taşımacılığı</h3>
-                <p>Geleceğimizin teminatı olan çocuklarımızın güvenliği bizim için her şeyden önemlidir. Okul
-                    servislerimizde yönetmeliklere tam uygun, emniyet kemerli, otomatik kapılı ve rehber personel
-                    bulundurulan araçlar kullanıyoruz.</p>
-                <br>
-                <p>Velilerimiz, araç takip sistemi sayesinde servisin nerede olduğunu ve tahmini varış süresini anlık
-                    olarak izleyebilirler.</p>
-            </div>
-        </div>
-
-        <div class="detail-item" id="transfer">
-            <img src="https://images.unsplash.com/photo-1517157434-60195adbd177?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
-                alt="VIP Transfer" class="detail-img">
-            <div class="detail-content">
-                <h3>Özel & VIP Transfer</h3>
-                <p>Havalimanı transferleri, otel karşılamaları veya özel davetleriniz için VIP araçlarımızla
-                    hizmetinizdeyiz. Deneyimli şoförlerimiz, sizi veya misafirlerinizi istediğiniz noktadan alıp,
-                    konforlu bir yolculukla hedefinize ulaştırır.</p>
-            </div>
-        </div>
-
-        <div class="detail-item" id="gezi">
-            <img src="https://images.unsplash.com/photo-1510521319766-8ff62dfd277d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
-                alt="Gezi ve Tur Hizmetleri" class="detail-img">
-            <div class="detail-content">
-                <h3>Gezi ve Tur Organizasyonları</h3>
-                <p>Okul gezileri, şirket motivasyon turları veya günübirlik kültür turları için otobüs ve minibüs
-                    kiralama hizmeti sunuyoruz. D2 belgeli araçlarımızla şehir içi ve şehirler arası yolculuklarınız
-                    keyifli bir anıya dönüşsün.</p>
-            </div>
-        </div>
-
     </div>
 
-    <footer>
-        <div class="container">
-            <div style="text-align: center;">
-                <p>&copy; 2026 Omkar Turizm. Tüm Hakları Saklıdır.</p>
-            </div>
+    <div class="detail-item" id="transfer">
+        <img src="https://images.unsplash.com/photo-1517157434-60195adbd177?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="VIP Transfer" class="detail-img fade-up">
+        <div class="detail-content fade-up">
+            <h3>Özel & VIP Transfer</h3>
+            <p>Havalimanı transferleri, otel karşılamaları veya özel davetleriniz için VIP araçlarımızla hizmetinizdeyiz. Deneyimli şoförlerimiz, sizi veya misafirlerinizi istediğiniz noktadan alıp, konforlu bir yolculukla hedefinize ulaştırır.</p>
+            <a href="/ozel-transfer" class="btn" style="margin-top:20px;">Detaylı Bilgi</a>
         </div>
-    </footer>
+    </div>
 
-    <script src="script.js"></script>
+    <div class="detail-item" id="gezi">
+        <img src="https://images.unsplash.com/photo-1510521319766-8ff62dfd277d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Gezi ve Tur Hizmetleri" class="detail-img fade-up">
+        <div class="detail-content fade-up">
+            <h3>Gezi ve Tur Organizasyonları</h3>
+            <p>Okul gezileri, şirket motivasyon turları veya günübirlik kültür turları için otobüs ve minibüs kiralama hizmeti sunuyoruz. D2 belgeli araçlarımızla şehir içi ve şehirler arası yolculuklarınız keyifli bir anıya dönüşsün.</p>
+            <a href="/gezi-turlar" class="btn" style="margin-top:20px;">Detaylı Bilgi</a>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <div class="container" style="text-align:center;padding:30px 0;">
+        <p>&copy; 2026 Omkar Taşımacılık. Tüm Hakları Saklıdır.</p>
+    </div>
+</footer>
+
+<script src="script.js"></script>
 </body>
-
 </html>
