@@ -1,26 +1,50 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
+const mongoose = require('mongoose');
 const path = require('path');
 const axios = require('axios');
 
 const app = express();
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-const db = new sqlite3.Database(path.join(__dirname, 'omkar.db'));
+// MongoDB bağlantısı
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/omkar';
+mongoose.connect(MONGODB_URI)
+    .then(() => console.log('MongoDB bağlantısı başarılı'))
+    .catch(err => console.error('MongoDB bağlantı hatası:', err));
 
-db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, phone TEXT, message TEXT, date TEXT)");
-    db.run("CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)");
-    // INSERT OR IGNORE ile her baslatmada tekrar eklenmesin
-    db.run("INSERT OR IGNORE INTO admins (username, password) VALUES ('admin', 'admin123')");
+// Mongoose şemaları
+const messageSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    phone: String,
+    message: String,
+    date: { type: Date, default: Date.now }
 });
+
+const adminSchema = new mongoose.Schema({
+    username: { type: String, unique: true },
+    password: String
+});
+
+const Message = mongoose.model('Message', messageSchema);
+const Admin = mongoose.model('Admin', adminSchema);
+
+// Varsayılan admin oluştur
+async function createDefaultAdmin() {
+    const existingAdmin = await Admin.findOne({ username: 'admin' });
+    if (!existingAdmin) {
+        await Admin.create({ username: 'admin', password: 'admin123' });
+        console.log('Varsayılan admin oluşturuldu');
+    }
+}
+createDefaultAdmin();
 
 const RECAPTCHA_SECRET_KEY = '6LcPHW8sAAAAAFLro5AI6n1LawBSY69tHTYvHRom';
 
@@ -43,47 +67,53 @@ app.post('/api/contact', async (req, res) => {
         }
     }
 
-    const stmt = db.prepare("INSERT INTO messages (name, email, phone, message, date) VALUES (?, ?, ?, ?, ?)");
-    const date = new Date().toLocaleString('tr-TR');
-    stmt.run(name, email, phone, message, date, function (err) {
-        if (err) return res.status(500).json({ success: false, message: 'Veritabani hatasi.' });
+    try {
+        await Message.create({ name, email, phone, message });
         res.json({ success: true, message: 'Mesajiniz basariyla gonderildi. En kisa surede donus yapacagiz.' });
-    });
-    stmt.finalize();
+    } catch (err) {
+        console.error('Mesaj kaydetme hatasi:', err);
+        res.status(500).json({ success: false, message: 'Veritabani hatasi.' });
+    }
 });
 
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
-    db.get("SELECT * FROM admins WHERE username = ? AND password = ?", [username, password], (err, row) => {
-        if (err) return res.status(500).json({ success: false, message: 'Sunucu hatasi.' });
-        if (row) {
+    try {
+        const admin = await Admin.findOne({ username, password });
+        if (admin) {
             res.json({ success: true });
         } else {
             res.status(401).json({ success: false, message: 'Hatali kullanici adi veya sifre.' });
         }
-    });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Sunucu hatasi.' });
+    }
 });
 
-app.get('/api/admin/messages', (req, res) => {
+app.get('/api/admin/messages', async (req, res) => {
     const auth = req.headers['x-admin-auth'];
     if (auth !== 'omkar-admin-2026') {
         return res.status(403).json({ success: false, message: 'Yetkisiz erisim.' });
     }
-    db.all("SELECT * FROM messages ORDER BY id DESC", [], (err, rows) => {
-        if (err) return res.status(500).json({ success: false, message: 'Veritabani hatasi.' });
-        res.json(rows);
-    });
+    try {
+        const messages = await Message.find().sort({ _id: -1 });
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Veritabani hatasi.' });
+    }
 });
 
-app.delete('/api/admin/messages/:id', (req, res) => {
+app.delete('/api/admin/messages/:id', async (req, res) => {
     const auth = req.headers['x-admin-auth'];
     if (auth !== 'omkar-admin-2026') {
         return res.status(403).json({ success: false, message: 'Yetkisiz erisim.' });
     }
-    db.run("DELETE FROM messages WHERE id = ?", [req.params.id], function (err) {
-        if (err) return res.status(500).json({ success: false, message: 'Silinemedi.' });
+    try {
+        await Message.findByIdAndDelete(req.params.id);
         res.json({ success: true });
-    });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Silinemedi.' });
+    }
 });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'omkar.html')));
